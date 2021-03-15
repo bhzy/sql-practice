@@ -9,3 +9,10 @@ CREATE TABLE TestSchema.TestTable (Id INT NOT NULL,
 	IsSold BIT,
 	InvoiceDate DATE)
 GO
+CREATE USER TestUser WITH PASSWORD='Str0ngP@ssword'
+GO
+GRANT CONNECT TO TestUser
+GO
+GRANT SELECT ON TestSchema.TestTable TO TestUser
+GO
+DROP USER TestUser
