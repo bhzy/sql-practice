@@ -1,0 +1,11 @@
+CREATE DATABASE TestDb
+GO
+USE TestDb
+GO
+CREATE SCHEMA TestSchema
+GO
+CREATE TABLE TestSchema.TestTable (Id INT NOT NULL,
+	Name VARCHAR(20),
+	IsSold BIT,
+	InvoiceDate DATE)
+GO
