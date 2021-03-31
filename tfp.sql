@@ -34,18 +34,19 @@ GO
 CREATE FUNCTION HumanResources.ufnEmployeeByDepartment (@DepartmentID INT)
 RETURNS TABLE
 AS
-RETURN (
-		WITH DepartmentEmployees AS (
-				SELECT BusinessEntityID
-				FROM HumanResources.EmployeeDepartmentHistory
-				WHERE DepartmentID = @DepartmentID
-					AND EndDate IS NULL
-				)
-		SELECT e.*
-		FROM HumanResources.Employee AS e
-		JOIN DepartmentEmployees AS de
-			ON e.BusinessEntityID = de.BusinessEntityID
-		);
+RETURN 
+(
+	WITH DepartmentEmployees AS (
+			SELECT BusinessEntityID
+			FROM HumanResources.EmployeeDepartmentHistory
+			WHERE DepartmentID = @DepartmentID
+				AND EndDate IS NULL
+			)
+	SELECT e.*
+	FROM HumanResources.Employee AS e
+	JOIN DepartmentEmployees AS de
+		ON e.BusinessEntityID = de.BusinessEntityID
+);
 GO
 
 -- Query 5
