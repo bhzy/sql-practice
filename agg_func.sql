@@ -2,69 +2,49 @@ USE AdventureWorks2019;
 GO
 
 -- Query 1
-SELECT COUNT(DISTINCT GroupName) AS GroupCount
-FROM HumanResources.Department;
+SELECT GroupName, COUNT(*) As NumDeps
+FROM HumanResources.Department
+GROUP BY GroupName
 GO
 
 -- Query 2
-SELECT BusinessEntityId
-	,MAX(Rate) AS MaxRate
-FROM HumanResources.EmployeePayHistory
-GROUP BY BusinessEntityID;
+SELECT eph.BusinessEntityId
+	,e.JobTitle
+	,MAX(eph.Rate) AS MaxRate
+FROM HumanResources.EmployeePayHistory AS eph
+JOIN HumanResources.Employee AS e
+ON eph.BusinessEntityID = e.BusinessEntityID
+GROUP BY eph.BusinessEntityID, e.JobTitle;
 GO
 
 -- Query 3
-WITH MinPrices (
-	ProductSubcategoryID
-	,MinPrice
-	)
-AS (
-	SELECT p.ProductSubcategoryID
-		,MIN(sod.UnitPrice) AS MinPrice
-	FROM Sales.SalesOrderDetail AS sod
-	JOIN Production.Product AS p
-		ON p.ProductID = sod.ProductID
-	GROUP BY p.ProductSubcategoryID
-	)
-SELECT ps.ProductSubcategoryID
-	,ps.Name
-	,MinPrices.MinPrice
-FROM Production.ProductSubcategory AS ps
-LEFT JOIN MinPrices
-	ON ps.ProductSubcategoryID = MinPrices.ProductSubcategoryID;
+SELECT ps.Name, MIN(sod.UnitPrice) AS MinPrice
+FROM Sales.SalesOrderDetail as sod
+JOIN Production.Product as p
+ON sod.ProductID = p.ProductID
+JOIN Production.ProductSubcategory as ps
+ON p.ProductSubcategoryID = ps.ProductSubcategoryID
+GROUP BY ps.Name;
 GO
+
 
 -- Query 4
-SELECT pc.ProductCategoryID
-	,pc.Name
-	,(
-		SELECT COUNT(*)
-		FROM Production.ProductSubcategory
-		WHERE ProductCategoryID = pc.ProductCategoryID
-		GROUP BY ProductCategoryID
-		) AS NumOfSubcategories
-FROM Production.ProductCategory AS pc;
+SELECT pc.Name, COUNT(ps.ProductSubcategoryID) as NumSubcategories
+FROM Production.ProductSubcategory as ps
+JOIN Production.ProductCategory as pc
+ON ps.ProductCategoryID = pc.ProductCategoryID
+GROUP BY pc.Name;
 GO
 
+
 -- Query 5
-WITH AvgTotals (
-	ProductSubcategoryID
-	,AvgTotal
-	)
-AS (
-	SELECT p.ProductSubcategoryID
-		,AVG(sod.LineTotal) AS AvgTotal
-	FROM Sales.SalesOrderDetail AS sod
-	JOIN Production.Product AS p
-		ON p.ProductID = sod.ProductID
-	GROUP BY p.ProductSubcategoryID
-	)
-SELECT ps.ProductSubcategoryID
-	,ps.Name
-	,AvgTotals.AvgTotal
-FROM Production.ProductSubcategory AS ps
-LEFT JOIN AvgTotals
-	ON ps.ProductSubcategoryID = AvgTotals.ProductSubcategoryID;
+SELECT ps.Name, AVG(sod.LineTotal) AS AvgTotal
+FROM Sales.SalesOrderDetail as sod
+JOIN Production.Product as p
+ON sod.ProductID = p.ProductID
+JOIN Production.ProductSubcategory as ps
+ON p.ProductSubcategoryID = ps.ProductSubcategoryID
+GROUP BY ps.Name;
 GO
 
 -- Query 6
@@ -76,4 +56,5 @@ WHERE Rate = (
 		SELECT MAX(Rate)
 		FROM HumanResources.EmployeePayHistory
 		)
+
 
