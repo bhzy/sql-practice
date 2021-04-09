@@ -22,7 +22,7 @@ FROM (
 	GROUP BY p.ProductID
 		,p.Name
 	) t
-WHERE t.Percentile IN (
+WHERE t.Percentile NOT IN (
 		1
 		,10
 		);
@@ -96,10 +96,10 @@ ORDER BY DATE;
 GO
 
 -- Query 6
-SELECT DISTINCT ps.ProductSubcategoryID
-	,FIRST_VALUE(p.ProductID) OVER (
-		PARTITION BY ps.ProductSubcategoryID ORDER BY SUM(sod.OrderQty) DESC
-		) TopProductID
+SELECT DISTINCT ps.Name SubcategoryName
+	,FIRST_VALUE(p.Name) OVER (
+		PARTITION BY ps.Name ORDER BY SUM(sod.OrderQty) DESC
+		) TopProductName
 FROM Sales.SalesOrderHeader AS soh
 JOIN Sales.SalesOrderDetail AS sod
 	ON soh.SalesOrderID = sod.SalesOrderID
@@ -109,7 +109,7 @@ JOIN Production.ProductSubcategory AS ps
 	ON p.ProductSubcategoryID = ps.ProductSubcategoryID
 WHERE YEAR(soh.OrderDate) = 2013
 	AND MONTH(soh.OrderDate) = 1
-GROUP BY ps.ProductSubcategoryID
-	,p.ProductID;
+GROUP BY ps.Name
+	,p.Name;
 GO
 
